@@ -14,16 +14,17 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror")
 
 # Add our include directory to CMake's search paths.
 # THIS IS REQUIRED
-
+include_directories(../include)
 
 # Create library from dyn_array so we can use it later.
+add_library(dyn_array)
 
 
 # Compile the analysis executable.
-
+add_executable()
 
 # link the dyn_array library we compiled against our analysis executable.
-
+target_link_libraries(dyn_array)
 
 # Compile the the tester executable.
 add_executable(${PROJECT_NAME}_test ......)
