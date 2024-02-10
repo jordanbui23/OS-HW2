@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # ALL OF THE SPECIFIED NAMES IN THIS CMAKE ARE REQUIRED.
-# Set the project name variable to assignment3.
+# Set the project name variable to hw2.
 # THIS IS REQUIRED
 project(hw2)
 
@@ -14,10 +14,10 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror")
 
 # Add our include directory to CMake's search paths.
 # THIS IS REQUIRED
-include_directories(include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Create library from dyn_array so we can use it later.
-add_library(dyn_array)
+add_library(dyn_array dyn_array.c)
 
 # Compile the analysis executable.
 set(SOURCES
@@ -31,7 +31,7 @@ add_executable(analysis ${SOURCES})
 target_link_libraries(dyn_array)
 
 # Compile the the tester executable.
-add_executable(${PROJECT_NAME}_test ......)
+add_executable(${PROJECT_NAME}_test ${SOURCES})
 
 target_compile_definitions(${PROJECT_NAME}_test PRIVATE)
 
