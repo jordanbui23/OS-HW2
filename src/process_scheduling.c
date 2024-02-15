@@ -32,8 +32,11 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
         ProcessControlBlock_t *pcb = dyn_array_at(ready_queue, i);
 
         // Update times
-        total_turnaround_time += total_clock_time + pcb->burst_time;
+        total_turnaround_time += total_clock_time + pcb->burst_time; //Should you subtract arrival time from these? JO
         total_wait_time += total_clock_time;
+
+        //total_turnaround_time += (total_clock_time + pcb->burst_time) - pcb->arrival_time;
+        //total_wait_time += total_clock_time - pcb->arrival_time;
 
         // Update total clock time
         total_clock_time += pcb->burst_time;
