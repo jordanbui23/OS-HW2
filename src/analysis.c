@@ -30,9 +30,39 @@ int main(int argc, char **argv)
     //Make the dyn_array ready_queue (I have no opinion on minimum size, that is why it is zero)
     dyn_array *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t));
 
+    //Load PCBs into ready_queue
+    ProcessControlBlock_t pcb;
+    while (fread(&pcb, sizeof(ProcessControlBlock_t), 1, file) == 1) 
+    {
+        dyn_array_push_back(ready_queue, &pcb);
+    }
+
     //Execute scheduling algorithm to collect time statistics
     //TODO?
-    first_come_first_serve(ready_queue);
+    if(argv[2] == FCFS)
+    {
+        first_come_first_serve(ready_queue);
+    }
+    else if(argv[2] == P)
+    {
+        //TODO
+        return EXIT_FAILURE;
+    }
+    else if(argv[2] == RR)
+    {
+        //TODO
+        return EXIT_FAILURE;
+    }
+    else if(argv[2] == SJF)
+    {
+        //TODO
+        return EXIT_FAILURE;
+    }
+    else
+    {
+        //Should this be shortest time remaining?
+    }
+    
 
     //Clean up allocations (free dyn_array? & close file?)
     fclose(file);
