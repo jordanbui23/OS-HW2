@@ -60,16 +60,47 @@ int main(int argc, char **argv)
     }
     else
     {
-        //Should this be shortest time remaining?
+        //TODO?
+        //Should this be shortest time remaining function?
     }
     
 
     //Clean up allocations (free dyn_array? & close file?)
     fclose(file);
-    dyn_array_destroy(ready_queue);
 
-    //Report times to STDOUT the readme file
-    //TODO
+    //Report times to STDOUT
+    printf("Time Statistics:\n");
+    //I used ChatGPT for this next section (next 5 lines) It did a very clever printf with formatting
+    printf("PID\tArrival Time\tPriority\tRemaining Burst Time\tStarted\n");
+    for (size_t i = 0; i < dyn_array_size(ready_queue); i++) {
+        ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+        printf("%zu\t%u\t\t%u\t\t%u\t\t\t%s\n", i + 1, pcb->arrival, pcb->priority, pcb->remaining_burst_time, pcb->started ? "Yes" : "No");
+    }
+
+    //This next section will report the times to the readme (feel free to delete this section for better performance)
+    FILE *readme_file = fopen("readme.md", "w");
+    if (readme_file == NULL) {
+        printf("Error: Unable to open readme.md for writing.\n");
+        dyn_array_destroy(ready_queue);
+        return EXIT_FAILURE;
+    }
+
+    //Write general data format to README.md
+    fprintf(readme_file, "## Simulation Statistics\n");
+    fprintf(readme_file, "| PID | Arrival Time | Priority | Remaining Burst Time | Started |\n");
+    fprintf(readme_file, "| --- | ------------ | -------- | -------------------- | ------- |\n");
+
+    //Collect statistics and report times (just like before but with slightly different formatting)
+    for (size_t i = 0; i < dyn_array_size(ready_queue); i++) {
+        ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+        fprintf(readme_file, "| %zu | %u | %u | %u | %s |\n", i + 1, pcb->arrival, pcb->priority, pcb->remaining_burst_time, pcb->started ? "Yes" : "No");
+    }
+
+    //close the readme
+    fclose(readme_file);
+
+    //clean up allocations part 2
+    dyn_array_destroy(ready_queue);
 
     return EXIT_SUCCESS;
 }
