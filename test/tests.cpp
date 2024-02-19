@@ -49,21 +49,21 @@ TEST(load_process_control_blocks, InvalidInputFile) {
 
 
 TEST(first_come_first_serve, EmptyReadyQueue) {
-    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t));
+    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t), NULL);
     ScheduleResult_t result;
     bool success = first_come_first_serve(ready_queue, &result);
 
     EXPECT_FALSE(success);
-
 }
+
 TEST (first_come_first_serve, NullQueue) {
     ScheduleResult_t res;
-    bool success = first_come_first_serve(NULL, &res));
+    bool success = first_come_first_serve(NULL, &res);
     EXPECT_FALSE(success);
 }
 
 TEST (first_come_first_serve, NonEmptyReadyQueue) {
-    dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t));
+    dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t), NULL);
     
     //Example values
     ProcessControlBlock_t pcb1 = {10, 2, 0};  //burst time, priority, arrival 
