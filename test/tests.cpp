@@ -34,6 +34,52 @@ class GradeEnvironment : public testing::Environment
         }
 };
 
+TEST(PCBLoadingTest, ValidInputFile)
+{
+    dyn_array_t *pcb_array = load_process_control_blocks("valid_input_file.bin");
+
+    ASSERT_NE(pcb_array, nullptr); //Checks if the dyn_array_t above is not null
+
+}
+
+TEST(PCBLoadingTest, InvalidInputFile) {
+    dyn_array_t *pcb_array = load_process_control_blocks("nonexistent_file.bin");
+    EXPECT_EQ(pcb_array, nullptr);
+}
+
+TEST(FCFSTest, EmptyReadyQueue) {
+    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t));
+    ScheduleResult_t result;
+    bool success = first_come_first_serve(ready_queue, &result);
+    
+    EXPECT_FALSE(success);
+
+    /*
+    EXPECT_EQ(result.average_waiting_time, 0.0);
+    EXPECT_EQ(result.average_turnaround_time, 0.0);
+    EXPECT_EQ(result.total_run_time, 0UL);
+    */
+}
+
+TEST(FCFSTest, NonEmptyReadyQueue) {
+    dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t));
+    
+    //Example values
+    ProcessControlBlock_t pcb1 = {10, 2, 0};  //burst time, priority, arrival 
+    ProcessControlBlock_t pcb2 = {8, 1, 5};   
+    ProcessControlBlock_t pcb3 = {15, 3, 3};
+
+    dyn_array_push_back(ready_queue, &pcb1);
+    dyn_array_push_back(ready_queue, &pcb2);
+    dyn_array_push_back(ready_queue, &pcb3);
+
+    ScheduleResult_t result;
+    bool success = first_come_first_serve(ready_queue, &result);
+
+    EXPECT_TRUE(success);
+}
+
+
 
 int main(int argc, char **argv) 
 {
