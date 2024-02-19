@@ -4,37 +4,37 @@
 #include <pthread.h>
 #include "../include/processing_scheduling.h"
 
-// Using a C library requires extern "C" to prevent function managling
-extern "C" 
+// Using a C library requires extern "C" to prevent function mangling
+extern "C"
 {
 #include <dyn_array.h>
 }
 
-
+/*
 #define NUM_PCB 30
 #define QUANTUM 5 // Used for Robin Round for process as the run time limit
 
 unsigned int score;
 unsigned int total;
 
-class GradeEnvironment : public testing::Environment 
+class GradeEnvironment : public testing::Environment
 {
-    public:
-        virtual void SetUp() 
-        {
-            score = 0;
-            total = 210;
-        }
-
-        virtual void TearDown()
-        {
-            ::testing::Test::RecordProperty("points_given", score);
-            ::testing::Test::RecordProperty("points_total", total);
-            std::cout << "SCORE: " << score << '/' << total << std::endl;
-        }
+ public:
+   virtual void SetUp()
+   {
+      score = 0;
+      total = 210;
+   }
+   virtual void TearDown()
+   {
+      ::testing::Test::RecordProperty("points_given", score);
+      ::testing::Test::RecordProperty("points_total", total);
+      std::cout << "SCORE: " << score << '/' << total << std::endl;
+   }
 };
+*/
 
-TEST(PCBLoadingTest, ValidInputFile)
+TEST(load_process_control_blocks, ValidInputFile)
 {
     dyn_array_t *pcb_array = load_process_control_blocks("valid_input_file.bin");
 
@@ -42,26 +42,27 @@ TEST(PCBLoadingTest, ValidInputFile)
 
 }
 
-TEST(PCBLoadingTest, InvalidInputFile) {
+TEST(load_process_control_blocks, InvalidInputFile) {
     dyn_array_t *pcb_array = load_process_control_blocks("nonexistent_file.bin");
     EXPECT_EQ(pcb_array, nullptr);
 }
 
-TEST(FCFSTest, EmptyReadyQueue) {
+
+TEST(first_come_first_serve, EmptyReadyQueue) {
     dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t));
     ScheduleResult_t result;
     bool success = first_come_first_serve(ready_queue, &result);
-    
+
     EXPECT_FALSE(success);
 
-    /*
-    EXPECT_EQ(result.average_waiting_time, 0.0);
-    EXPECT_EQ(result.average_turnaround_time, 0.0);
-    EXPECT_EQ(result.total_run_time, 0UL);
-    */
+}
+TEST (first_come_first_serve, NullQueue) {
+    ScheduleResult_t res;
+    bool success = first_come_first_serve(NULL, &res));
+    EXPECT_FALSE(success);
 }
 
-TEST(FCFSTest, NonEmptyReadyQueue) {
+TEST (first_come_first_serve, NonEmptyReadyQueue) {
     dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t));
     
     //Example values
@@ -79,11 +80,9 @@ TEST(FCFSTest, NonEmptyReadyQueue) {
     EXPECT_TRUE(success);
 }
 
-
-
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
+    // ::testing::InitGoogleTest(&argc, argv);
+    // ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
     return RUN_ALL_TESTS();
 }
