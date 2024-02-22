@@ -2,7 +2,7 @@ build/
 *.bin
 
 ###C###
-
+.vscode
 # Object files
 *.o
 *.ko

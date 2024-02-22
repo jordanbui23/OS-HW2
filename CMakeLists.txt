@@ -12,6 +12,9 @@ project(hw2)
 set(CMAKE_C_FLAGS "-std=c11 -Wall -Wextra -Wshadow -Werror")
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror")
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Add our include directory to CMake's search paths.
 # THIS IS REQUIRED
 include_directories(${PROJECT_SOURCE_DIR}/include)
