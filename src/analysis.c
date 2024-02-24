@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     }
 
     //Execute scheduling algorithm to collect time statistics
-    //TODO?
+    //TODO
     if(strncmp(argv[2], FCFS, 2))
     {
         // first_come_first_serve(ready_queue, XXX); NEED ANOTHER ARGUMENT IN FUNCTION CALL
@@ -50,7 +50,8 @@ int main(int argc, char **argv)
     }
     else if(strncmp(argv[2], SRJF, 2))
     {
-        //shortest_remaining_time_first(ready_queue, XXX);
+        ScheduleResult_t result;
+        shortest_remaining_time_first(ready_queue, result);
     }
     else if(strncmp(argv[2], SJF, 2))
     {
@@ -58,6 +59,9 @@ int main(int argc, char **argv)
     }
     else
     {
+        printf("Invalid scheduling algorithm");
+        fclose(file);
+        dyn_array_destroy(ready_queue);
         return EXIT_FAILURE;
     }
     

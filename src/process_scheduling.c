@@ -108,7 +108,49 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
 
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
-    UNUSED(ready_queue);
-    UNUSED(result);
-    return false;
+    //check for bad inputs
+    if(ready_queue == NULL || result == NULL)
+    {
+        return false;
+    }
+
+    //local vars to update
+    float total_waiting_time = 0.0;
+    unsigned long total_completion_time = 0;
+    unsigned long total_processes = dyn_array_size(ready_queue);
+
+    // Process each process in the ready_queue
+    while (dyn_array_size(ready_queue) > 0) {
+        // Find the process with the shortest remaining time
+        int shortest_time = *(int *)dyn_array_at(ready_queue, 0);
+        size_t shortest_index = 0;
+
+        for (size_t i = 1; i < dyn_array_size(ready_queue); i++) 
+        {
+            int *remaining_time = (int *)dyn_array_at(ready_queue, i);
+            if (*remaining_time < shortest_time) {
+                shortest_time = *remaining_time;
+                shortest_index = i;
+            }
+        }
+
+        // Get the remaining time of the shortest process
+        int *shortest_remaining_time = (int *)dyn_array_at(ready_queue, shortest_index);
+
+        // Update total waiting time and total completion time
+        total_waiting_time += shortest_time * (dyn_array_size(ready_queue) - 1); // The shortest process has waited for all other processes
+        total_completion_time += shortest_time;
+
+        // Remove the shortest process from the ready_queue
+        dyn_array_erase(ready_queue, shortest_index);
+    }
+
+    // Calculate average waiting time, average turnaround time, and update total run time
+    result->average_waiting_time = total_waiting_time / total_processes;
+    result->average_turnaround_time = (float)total_completion_time / total_processes;
+    result->total_run_time = total_completion_time;
+
+    return true;
+
+    return true;
 }
