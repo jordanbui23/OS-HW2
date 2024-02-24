@@ -57,6 +57,7 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
     return false;   
 }
 
+//Do not have to do this one this time
 bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
     UNUSED(ready_queue);

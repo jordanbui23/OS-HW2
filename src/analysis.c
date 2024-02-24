@@ -8,6 +8,7 @@
 #define P "P"
 #define RR "RR"
 #define SJF "SJF"
+#define SRJF "SRJF"
 
 // Add and comment your analysis code in this function.
 // THIS IS NOT FINISHED.
@@ -41,27 +42,23 @@ int main(int argc, char **argv)
     //TODO?
     if(strncmp(argv[2], FCFS, 2))
     {
-        // first_come_first_serve(ready_queue); NEED ANOTHER ARGUMENT IN FUNCTION CALL
+        // first_come_first_serve(ready_queue, XXX); NEED ANOTHER ARGUMENT IN FUNCTION CALL
     }
     else if(strncmp(argv[2], RR, 2))
     {
-        //TODO
-        return EXIT_FAILURE;
+        //round_robin(ready_queue, XXX, YYY);
     }
-    else if(strncmp(argv[2], P, 2))
+    else if(strncmp(argv[2], SRJF, 2))
     {
-        //TODO
-        return EXIT_FAILURE;
+        //shortest_remaining_time_first(ready_queue, XXX);
     }
     else if(strncmp(argv[2], SJF, 2))
     {
-        //TODO
-        return EXIT_FAILURE;
+        //shortest_job_first(ready_queue, XXX);
     }
     else
     {
-        //TODO?
-        //Should this be shortest time remaining function?
+        return EXIT_FAILURE;
     }
     
 
