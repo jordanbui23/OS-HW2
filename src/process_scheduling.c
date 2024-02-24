@@ -108,49 +108,65 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
 
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
-    //check for bad inputs
-    if(ready_queue == NULL || result == NULL)
-    {
+    // Check for bad inputs
+    if (ready_queue == NULL || result == NULL) {
         return false;
     }
 
-    //local vars to update
-    float total_waiting_time = 0.0;
-    unsigned long total_completion_time = 0;
-    unsigned long total_processes = dyn_array_size(ready_queue);
+    // Get the initial size of the ready queue
+    size_t queue_size = dyn_array_size(ready_queue);
 
-    // Process each process in the ready_queue
-    while (dyn_array_size(ready_queue) > 0) {
+    // Check if the ready queue is empty
+    if (queue_size == 0) 
+    {
+        result->average_waiting_time = 0.0;
+        result->average_turnaround_time = 0.0;
+        result->total_run_time = 0;
+        return true;
+    }
+
+    // Local variables to update
+    unsigned long total_waiting_time = 0;
+    unsigned long total_completion_time = 0;
+
+    // Process the PCBs in the ready queue
+    while (dyn_array_size(ready_queue) > 0) 
+    {
         // Find the process with the shortest remaining time
-        int shortest_time = *(int *)dyn_array_at(ready_queue, 0);
+        ProcessControlBlock_t *shortest_pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, 0);
         size_t shortest_index = 0;
 
+        //compare PCBs (start at i=1 so you do not compare the pcb at 0 to itself)
         for (size_t i = 1; i < dyn_array_size(ready_queue); i++) 
         {
-            int *remaining_time = (int *)dyn_array_at(ready_queue, i);
-            if (*remaining_time < shortest_time) {
-                shortest_time = *remaining_time;
+            ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+            if (pcb->remaining_burst_time < shortest_pcb->remaining_burst_time) 
+            {
+                shortest_pcb = pcb;
                 shortest_index = i;
             }
         }
 
-        // Get the remaining time of the shortest process
-        int *shortest_remaining_time = (int *)dyn_array_at(ready_queue, shortest_index);
+        // Update total waiting time for each process
+        for (size_t i = 0; i < shortest_index; i++) 
+        {
+            ProcessControlBlock_t *higher_pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+            total_waiting_time += higher_pcb->remaining_burst_time;
+        }
 
-        // Update total waiting time and total completion time
-        total_waiting_time += shortest_time * (dyn_array_size(ready_queue) - 1); // The shortest process has waited for all other processes
-        total_completion_time += shortest_time;
+        // Update total completion time
+        total_completion_time += shortest_pcb->remaining_burst_time;
 
         // Remove the shortest process from the ready_queue
         dyn_array_erase(ready_queue, shortest_index);
     }
 
-    // Calculate average waiting time, average turnaround time, and update total run time
-    result->average_waiting_time = total_waiting_time / total_processes;
-    result->average_turnaround_time = (float)total_completion_time / total_processes;
-    result->total_run_time = total_completion_time;
+    // Calculate avg waiting time and avg turnaround time
+    result->average_waiting_time = (float)total_waiting_time / queue_size;
+    result->average_turnaround_time = (float)total_completion_time / queue_size;
 
-    return true;
+    // Update total runtime
+    result->total_run_time = total_completion_time;
 
     return true;
 }
