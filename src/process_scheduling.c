@@ -109,7 +109,8 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
     // Check for bad inputs
-    if (ready_queue == NULL || result == NULL) {
+    if (ready_queue == NULL || result == NULL) 
+    {
         return false;
     }
 
