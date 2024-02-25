@@ -32,14 +32,14 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
         ProcessControlBlock_t *pcb = dyn_array_at(ready_queue, i);
 
         // Update times
-        total_turnaround_time += total_clock_time + pcb->burst_time; //Should you subtract arrival time from these? JO
+        total_turnaround_time += total_clock_time + pcb->remaining_burst_time; //Should you subtract arrival time from these? JO
         total_wait_time += total_clock_time;
 
         //total_turnaround_time += (total_clock_time + pcb->burst_time) - pcb->arrival_time;
         //total_wait_time += total_clock_time - pcb->arrival_time;
 
         // Update total clock time
-        total_clock_time += pcb->burst_time;
+        total_clock_time += pcb->remaining_burst_time;
     }
 
     // Calculate all the times
@@ -57,7 +57,6 @@ bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result)
     return false;   
 }
 
-//Do not have to do this one this time
 bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
     UNUSED(ready_queue);
@@ -86,15 +85,15 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
     uint32_t num_blocks;
     fread(&num_blocks, sizeof(uint32_t), 1, file);
     // Create a dyn_array to store the ProcessControlBlocks
-    dyn_array_t *pcb_array = dyn_array_create(num_blocks, sizeof(ProcessControlBlock_t));
+    dyn_array_t *pcb_array = dyn_array_create(num_blocks, sizeof(ProcessControlBlock_t), NULL);
 
     // Read burst time, priority, and arrival time for each process control block
     for (uint32_t i = 0; i < num_blocks; i++) {
         ProcessControlBlock_t pcb;
         // A lot of error checking for all the times. fread will return 1 if successful
-        if (fread(&pcb.burst_time, sizeof(uint32_t), 1, file) != 1 ||
+        if (fread(&pcb.remaining_burst_time, sizeof(uint32_t), 1, file) != 1 ||
             fread(&pcb.priority, sizeof(uint32_t), 1, file) != 1 ||
-            fread(&pcb.arrival_time, sizeof(uint32_t), 1, file) != 1) {
+            fread(&pcb.arrival, sizeof(uint32_t), 1, file) != 1) {
             fclose(file);
             dyn_array_destroy(pcb_array);
             return NULL; 
@@ -109,8 +108,7 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
     // Check for bad inputs
-    if (ready_queue == NULL || result == NULL) 
-    {
+    if (ready_queue == NULL || result == NULL) {
         return false;
     }
 

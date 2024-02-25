@@ -8,7 +8,7 @@
 #define P "P"
 #define RR "RR"
 #define SJF "SJF"
-#define SRJF "SRJF"
+#define SRTF "SRTF"
 
 // Add and comment your analysis code in this function.
 // THIS IS NOT FINISHED.
@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     //make sure that the passed file is not null
     if(file == NULL)
     {
+        printf("NULL FILE");
         return EXIT_FAILURE;
     }
 
@@ -39,23 +40,26 @@ int main(int argc, char **argv)
     }
 
     //Execute scheduling algorithm to collect time statistics
-    //TODO
+    //TODO?
     if(strncmp(argv[2], FCFS, 2))
     {
-        // first_come_first_serve(ready_queue, XXX); NEED ANOTHER ARGUMENT IN FUNCTION CALL
+        ScheduleResult_t result;
+        first_come_first_serve(ready_queue, &result);
     }
     else if(strncmp(argv[2], RR, 2))
     {
-        //round_robin(ready_queue, XXX, YYY);
+        //TODO
+        return EXIT_FAILURE;
     }
-    else if(strncmp(argv[2], SRJF, 2))
+    else if(strncmp(argv[2], SRTF, 2))
     {
         ScheduleResult_t result;
-        shortest_remaining_time_first(ready_queue, result);
+        shortest_remaining_time_first(ready_queue, &result);
     }
     else if(strncmp(argv[2], SJF, 2))
     {
-        //shortest_job_first(ready_queue, XXX);
+        //TODO
+        return EXIT_FAILURE;
     }
     else
     {

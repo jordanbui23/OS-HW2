@@ -66,9 +66,42 @@ TEST (first_come_first_serve, NonEmptyReadyQueue) {
     dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t), NULL);
     
     //Example values
-    ProcessControlBlock_t pcb1 = {10, 2, 0};  //burst time, priority, arrival 
-    ProcessControlBlock_t pcb2 = {8, 1, 5};   
-    ProcessControlBlock_t pcb3 = {15, 3, 3};
+    ProcessControlBlock_t pcb1 = {10, 2, 0, true};  //burst time, priority, arrival 
+    ProcessControlBlock_t pcb2 = {8, 1, 5, true};   
+    ProcessControlBlock_t pcb3 = {15, 3, 3, true};
+
+    dyn_array_push_back(ready_queue, &pcb1);
+    dyn_array_push_back(ready_queue, &pcb2);
+    dyn_array_push_back(ready_queue, &pcb3);
+
+    ScheduleResult_t result;
+    bool success = first_come_first_serve(ready_queue, &result);
+
+    EXPECT_TRUE(success);
+}
+
+//I made it so that it's ok to have zero in queue, it will just return zero seconds and true
+TEST(shortest_remaining_time_first, EmptyReadyQueue) {
+    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t), NULL);
+    ScheduleResult_t result;
+    bool success = shortest_remaining_time_first(ready_queue, &result);
+
+    EXPECT_TRUE(success);
+}
+
+TEST (shortest_remaining_time_first, NullQueue) {
+    ScheduleResult_t res;
+    bool success = shortest_remaining_time_first(NULL, &res);
+    EXPECT_FALSE(success);
+}
+
+TEST (shortest_remaining_time_first, NonEmptyReadyQueue) {
+    dyn_array_t *ready_queue = dyn_array_create(3, sizeof(ProcessControlBlock_t), NULL);
+    
+    //Example values
+    ProcessControlBlock_t pcb1 = {10, 2, 0, true};  //burst time, priority, arrival 
+    ProcessControlBlock_t pcb2 = {8, 1, 5, true};   
+    ProcessControlBlock_t pcb3 = {15, 3, 3, true};
 
     dyn_array_push_back(ready_queue, &pcb1);
     dyn_array_push_back(ready_queue, &pcb2);
@@ -82,7 +115,7 @@ TEST (first_come_first_serve, NonEmptyReadyQueue) {
 
 int main(int argc, char **argv)
 {
-    // ::testing::InitGoogleTest(&argc, argv);
-    // ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
+    ::testing::InitGoogleTest(&argc, argv);
+    //::testing::AddGlobalTestEnvironment(new GradeEnvironment);
     return RUN_ALL_TESTS();
 }
