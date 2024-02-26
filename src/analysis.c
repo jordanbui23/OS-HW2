@@ -8,6 +8,7 @@
 #define P "P"
 #define RR "RR"
 #define SJF "SJF"
+#define SRTF "SRTF"
 
 // Add and comment your analysis code in this function.
 // THIS IS NOT FINISHED.
@@ -24,6 +25,7 @@ int main(int argc, char **argv)
     //make sure that the passed file is not null
     if(file == NULL)
     {
+        printf("NULL FILE");
         return EXIT_FAILURE;
     }
 
@@ -41,17 +43,18 @@ int main(int argc, char **argv)
     //TODO?
     if(strncmp(argv[2], FCFS, 2))
     {
-        // first_come_first_serve(ready_queue); NEED ANOTHER ARGUMENT IN FUNCTION CALL
+        ScheduleResult_t result;
+        first_come_first_serve(ready_queue, &result);
     }
     else if(strncmp(argv[2], RR, 2))
     {
         //TODO
         return EXIT_FAILURE;
     }
-    else if(strncmp(argv[2], P, 2))
+    else if(strncmp(argv[2], SRTF, 2))
     {
-        //TODO
-        return EXIT_FAILURE;
+        ScheduleResult_t result;
+        shortest_remaining_time_first(ready_queue, &result);
     }
     else if(strncmp(argv[2], SJF, 2))
     {
@@ -60,8 +63,10 @@ int main(int argc, char **argv)
     }
     else
     {
-        //TODO?
-        //Should this be shortest time remaining function?
+        printf("Invalid scheduling algorithm");
+        fclose(file);
+        dyn_array_destroy(ready_queue);
+        return EXIT_FAILURE;
     }
     
 

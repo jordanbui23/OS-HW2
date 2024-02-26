@@ -24,7 +24,8 @@ add_library(dyn_array src/dyn_array.c)
 add_library(process_scheduling src/process_scheduling.c)
 
 # Compile the analysis executable.
-add_executable(analysis src/analysis.c)
+file(COPY ${PROJECT_SOURCE_DIR}/pcb.bin DESTINATION .)
+add_executable(analysis src/analysis.c src/process_scheduling.c)
 
 # link the dyn_array library we compiled against our analysis executable.
 target_link_libraries(dyn_array)

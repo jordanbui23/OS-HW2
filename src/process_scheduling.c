@@ -52,24 +52,19 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 
 bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
-    //result->total_run_time = 0;
-    //result->average_waiting_time = 0;
-    //result->average_turnaround_time = 0;
-    if (ready_queue == NULL || dyn_array_size(ready_queue) == 0 || ready_queue->size == 0) {
+    if (ready_queue == NULL || dyn_array_size(ready_queue) == 0) {
         return false; 
     }
 
     ProcessControlBlock_t *shortest_job = NULL;
-    size_t shortest_job_index = 0;
 
     // Finds shortest burst time
-    for (size_t i = 0; i < ready_queue->size; i++) {
-        ProcessControlBlock_t *current_process = (ProcessControlBlock_t *)((char *)ready_queue->array + i * ready_queue->data_size);
+    for (size_t i = 0; i < dyn_array_size(ready_queue); i++) {
+        ProcessControlBlock_t *current_process = dyn_array_at(ready_queue, i);
 
         if (!current_process->started) {
             if (shortest_job == NULL || current_process->remaining_burst_time < shortest_job->remaining_burst_time) {
                 shortest_job = current_process;
-                shortest_job_index = i;
             }
         }
     }
@@ -173,7 +168,65 @@ dyn_array_t *load_process_control_blocks(const char *input_file) {
 
 bool shortest_remaining_time_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
-    UNUSED(ready_queue);
-    UNUSED(result);
-    return false;
+    // Check for bad inputs
+    if (ready_queue == NULL || result == NULL) {
+        return false;
+    }
+
+    // Get the initial size of the ready queue
+    size_t queue_size = dyn_array_size(ready_queue);
+
+    // Check if the ready queue is empty
+    if (queue_size == 0) 
+    {
+        result->average_waiting_time = 0.0;
+        result->average_turnaround_time = 0.0;
+        result->total_run_time = 0;
+        return true;
+    }
+
+    // Local variables to update
+    unsigned long total_waiting_time = 0;
+    unsigned long total_completion_time = 0;
+
+    // Process the PCBs in the ready queue
+    while (dyn_array_size(ready_queue) > 0) 
+    {
+        // Find the process with the shortest remaining time
+        ProcessControlBlock_t *shortest_pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, 0);
+        size_t shortest_index = 0;
+
+        //compare PCBs (start at i=1 so you do not compare the pcb at 0 to itself)
+        for (size_t i = 1; i < dyn_array_size(ready_queue); i++) 
+        {
+            ProcessControlBlock_t *pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+            if (pcb->remaining_burst_time < shortest_pcb->remaining_burst_time) 
+            {
+                shortest_pcb = pcb;
+                shortest_index = i;
+            }
+        }
+
+        // Update total waiting time for each process
+        for (size_t i = 0; i < shortest_index; i++) 
+        {
+            ProcessControlBlock_t *higher_pcb = (ProcessControlBlock_t *)dyn_array_at(ready_queue, i);
+            total_waiting_time += higher_pcb->remaining_burst_time;
+        }
+
+        // Update total completion time
+        total_completion_time += shortest_pcb->remaining_burst_time;
+
+        // Remove the shortest process from the ready_queue
+        dyn_array_erase(ready_queue, shortest_index);
+    }
+
+    // Calculate avg waiting time and avg turnaround time
+    result->average_waiting_time = (float)total_waiting_time / queue_size;
+    result->average_turnaround_time = (float)total_completion_time / queue_size;
+
+    // Update total runtime
+    result->total_run_time = total_completion_time;
+
+    return true;
 }
