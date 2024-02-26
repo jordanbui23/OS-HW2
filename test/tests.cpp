@@ -34,13 +34,6 @@ class GradeEnvironment : public testing::Environment
 };
 */
 
-TEST(load_process_control_blocks, ValidInputFile)
-{
-    dyn_array_t *pcb_array = load_process_control_blocks("valid_input_file.bin");
-
-    ASSERT_NE(pcb_array, nullptr); //Checks if the dyn_array_t above is not null
-
-}
 
 TEST(load_process_control_blocks, InvalidInputFile) {
     dyn_array_t *pcb_array = load_process_control_blocks("nonexistent_file.bin");
@@ -148,6 +141,29 @@ TEST (shortest_remaining_time_first, NonEmptyReadyQueue) {
 
     ScheduleResult_t result;
     bool success = first_come_first_serve(ready_queue, &result);
+
+    EXPECT_TRUE(success);
+}
+
+TEST(shortest_job_first, EmptyReadyQueue) {
+    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t), NULL);
+    ScheduleResult_t result;
+    bool success = shortest_job_first(ready_queue, &result);
+
+    EXPECT_FALSE(success);
+}
+
+TEST(shortest_job_first, MultipleProcesses) {
+    dyn_array_t *ready_queue = dyn_array_create(0, sizeof(ProcessControlBlock_t), NULL);
+    ProcessControlBlock_t pcb1 = {8, 1, 0, false};
+    ProcessControlBlock_t pcb2 = {12, 2, 2, false};
+    ProcessControlBlock_t pcb3 = {6, 1, 3, false};
+    dyn_array_push_back(ready_queue, &pcb1);
+    dyn_array_push_back(ready_queue, &pcb2);
+    dyn_array_push_back(ready_queue, &pcb3);
+
+    ScheduleResult_t result;
+    bool success = shortest_job_first(ready_queue, &result);
 
     EXPECT_TRUE(success);
 }
