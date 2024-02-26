@@ -52,9 +52,38 @@ bool first_come_first_serve(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 
 bool shortest_job_first(dyn_array_t *ready_queue, ScheduleResult_t *result) 
 {
-    UNUSED(ready_queue);
-    UNUSED(result);
-    return false;   
+    //result->total_run_time = 0;
+    //result->average_waiting_time = 0;
+    //result->average_turnaround_time = 0;
+    if (ready_queue == NULL || dyn_array_size(ready_queue) == 0 || ready_queue->size == 0) {
+        return false; 
+    }
+
+    ProcessControlBlock_t *shortest_job = NULL;
+    size_t shortest_job_index = 0;
+
+    // Finds shortest burst time
+    for (size_t i = 0; i < ready_queue->size; i++) {
+        ProcessControlBlock_t *current_process = (ProcessControlBlock_t *)((char *)ready_queue->array + i * ready_queue->data_size);
+
+        if (!current_process->started) {
+            if (shortest_job == NULL || current_process->remaining_burst_time < shortest_job->remaining_burst_time) {
+                shortest_job = current_process;
+                shortest_job_index = i;
+            }
+        }
+    }
+
+    if (shortest_job == NULL) {
+        return false;
+    }
+
+    result->total_run_time += shortest_job->remaining_burst_time;
+    result->average_waiting_time += result->total_run_time - shortest_job->arrival;
+    result->average_turnaround_time += result->total_run_time;
+    shortest_job->started = true;
+
+    return true;
 }
 
 bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result) 
