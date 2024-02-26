@@ -64,12 +64,49 @@ bool priority(dyn_array_t *ready_queue, ScheduleResult_t *result)
     return false;   
 }
 
-bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quantum) 
-{
-    UNUSED(ready_queue);
-    UNUSED(result);
-    UNUSED(quantum);
-    return false;
+bool round_robin(dyn_array_t *ready_queue, ScheduleResult_t *result, size_t quantum) {
+    if (ready_queue == NULL || dyn_array_size(ready_queue) == 0 || result == NULL) {
+        return false; 
+    }
+
+    size_t size = dyn_array_size(ready_queue);
+
+    float total_wait_time = 0.0;
+    float total_turnaround_time = 0.0;
+    unsigned long total_clock_time = 0;
+
+    // Create a queue to simulate the ready queue for round robin scheduling
+    dyn_array_t *rr_queue = dyn_array_create(1, sizeof(ProcessControlBlock_t), NULL);
+    if (rr_queue == NULL) {
+        return false; 
+    }
+
+    while (dyn_array_size(ready_queue) > 0) {
+        ProcessControlBlock_t *pcb = dyn_array_at(ready_queue, 0);  
+        size_t execution_time = (pcb->remaining_burst_time > quantum) ? quantum : pcb->remaining_burst_time;
+
+        total_turnaround_time += total_clock_time + execution_time;
+        total_wait_time += total_clock_time;
+
+        pcb->remaining_burst_time -= execution_time;
+        total_clock_time += execution_time;
+
+        // Check if the PCB has completed its execution
+        if (pcb->remaining_burst_time == 0) {
+            dyn_array_erase(ready_queue, 0);
+        } else {
+            // Move the PCB to the end of the ready queue (simulate round robin)
+            dyn_array_push_back(ready_queue, pcb);
+            dyn_array_erase(ready_queue, 0);
+        }
+    }
+
+    dyn_array_destroy(rr_queue);
+
+    result->average_waiting_time = total_wait_time / size;
+    result->average_turnaround_time = total_turnaround_time / size;
+    result->total_run_time = total_clock_time;
+    return true;
 }
 
 dyn_array_t *load_process_control_blocks(const char *input_file) {
